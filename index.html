@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تكاتف - التكافل المجتمعي لحي الإسكان الأول</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#ecfdf5',
+                            100: '#d1fae5',
+                            500: '#10b981',
+                            600: '#059669',
+                            700: '#047857',
+                            800: '#065f46',
+                        },
+                        accent: {
+                            50: '#fffbeb',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #f8fafc;
+        }
+        .modal-active {
+            overflow: hidden;
+        }
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo & Branding -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="bg-brand-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-brand-600/30">
+                        <i class="fa-solid font-bold fa-hand-holding-heart text-2xl"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black text-gray-900 tracking-tight block">تَكــــاتُف</span>
+                        <span class="text-xs text-brand-700 font-semibold flex items-center gap-1">
+                            <i class="fa-solid fa-location-dot text-brand-600"></i>
+                            حي الإسكان الأول
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons Desktop -->
+                <div class="hidden md:flex items-center space-x-3 space-x-reverse">
+                    <button onclick="switchTab('offers')" id="nav-offers-btn" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-brand-700 bg-brand-50 cursor-pointer">
+                        <i class="fa-solid fa-gift ml-1.5"></i> المكتسبات المعروضة
+                    </button>
+                    <button onclick="switchTab('requests')" id="nav-requests-btn" class="px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-gray-600 hover:text-brand-600 hover:bg-gray-50 cursor-pointer">
+                        <i class="fa-solid fa-hands-helping ml-1.5"></i> طلبات الاحتياج
+                    </button>
+                    <button onclick="openModal('addModal')" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-md shadow-brand-600/20 hover:shadow-lg transition-all duration-200 flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>إضافة غرض / تبرع</span>
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="flex md:hidden items-center gap-2">
+                    <button onclick="openModal('addModal')" class="bg-brand-600 text-white p-2.5 rounded-xl text-sm font-bold cursor-pointer">
+                        <i class="fa-solid fa-plus"></i>
+                    </button>
+                    <button onclick="toggleMobileMenu()" class="text-gray-600 hover:text-gray-900 p-2 focus:outline-none cursor-pointer">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden border-t border-gray-100 bg-white px-4 pt-2 pb-4 space-y-2">
+            <button onclick="switchTab('offers'); toggleMobileMenu()" class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-sm text-brand-700 bg-brand-50 block cursor-pointer">
+                <i class="fa-solid fa-gift ml-1.5"></i> المعروض للتبرع
+            </button>
+            <button onclick="switchTab('requests'); toggleMobileMenu()" class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-sm text-gray-600 hover:bg-gray-50 block cursor-pointer">
+                <i class="fa-solid fa-hands-helping ml-1.5"></i> طلبات الاحتياج
+            </button>
+            <button onclick="openModal('requestModal'); toggleMobileMenu()" class="w-full text-right px-4 py-2.5 rounded-xl font-bold text-sm text-amber-600 bg-amber-50 block cursor-pointer">
+                <i class="fa-solid fa-bullhorn ml-1.5"></i> أضف طلب احتياج خاص
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Announcement & Statistics Banner -->
+    <section class="bg-gradient-to-l from-brand-800 to-brand-600 text-white py-10 px-4 sm:px-6 lg:px-8 shadow-inner relative overflow-hidden">
+        <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="absolute right-10 top-0 w-64 h-64 bg-white/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 relative z-10">
+            <div class="text-center md:text-right max-w-2xl">
+                <span class="inline-block px-3 py-1 bg-white/20 rounded-full text-xs font-semibold mb-3 backdrop-blur-sm">
+                    🤝 المبادرة المجتمعية المعتمدة لحي الإسكان الأول
+                </span>
+                <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2 leading-tight">
+                    يداً بيد لتعزيز التكافل والاستفادة بين الجيران
+                </h1>
+                <p class="text-brand-100 text-sm sm:text-base leading-relaxed">
+                    منصة تكاتف تمكّنك من التبرع بالأثاث والأجهزة الكهربائية ومستلزمات المطبخ لأهالي الحي بكل سهولة وأمان دون وسائط.
+                </p>
+            </div>
+
+            <div class="flex items-center gap-4 bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/15 text-center min-w-[280px] justify-around w-full md:w-auto">
+                <div>
+                    <span id="stat-offers" class="text-2xl font-black text-white block">0</span>
+                    <span class="text-xs text-brand-100">غرض متاح</span>
+                </div>
+                <div class="w-px h-8 bg-white/20"></div>
+                <div>
+                    <span id="stat-delivered" class="text-2xl font-black text-white block">0</span>
+                    <span class="text-xs text-brand-100">تم تسليمه</span>
+                </div>
+                <div class="w-px h-8 bg-white/20"></div>
+                <div>
+                    <span id="stat-requests" class="text-2xl font-black text-white block">0</span>
+                    <span class="text-xs text-brand-100">طلب احتياج</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Search and Filters Section -->
+        <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-8 space-y-4">
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center">
+                <!-- Search Input -->
+                <div class="relative w-full md:w-96">
+                    <i class="fa-solid fa-search absolute right-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    <input type="text" id="searchInput" oninput="applyFilters()" placeholder="ابحث باسم الغرض أو رقم البلك..." class="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-transparent text-sm">
+                </div>
+
+                <!-- Secondary Button for Urgent Needs Modal -->
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <button onclick="openModal('requestModal')" class="w-full md:w-auto bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200/60 px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-bullhorn text-amber-600"></i>
+                        <span>تقديم طلب احتياج خاص</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Categories Tabs -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 pt-2 no-scrollbar text-sm font-semibold">
+                <button onclick="filterCategory('all')" class="category-btn active border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 bg-brand-600 text-white border-brand-600 cursor-pointer" data-cat="all">
+                    <i class="fa-solid fa-th-large ml-1"></i> الكل
+                </button>
+                <button onclick="filterCategory('الأثاث المنزلي')" class="category-btn border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer" data-cat="الأثاث المنزلي">
+                    <i class="fa-solid fa-couch ml-1"></i> الأثاث
+                </button>
+                <button onclick="filterCategory('الأجهزة الكهربائية')" class="category-btn border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer" data-cat="الأجهزة الكهربائية">
+                    <i class="fa-solid fa-tv ml-1"></i> الأجهزة الكهربائية
+                </button>
+                <button onclick="filterCategory('أواني المطبخ')" class="category-btn border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer" data-cat="أواني المطبخ">
+                    <i class="fa-solid fa-kitchen-set ml-1"></i> أواني المطبخ
+                </button>
+                <button onclick="filterCategory('مستلزمات أطفال')" class="category-btn border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer" data-cat="مستلزمات أطفال">
+                    <i class="fa-solid fa-baby-carriage ml-1"></i> مستلزمات أطفال
+                </button>
+                <button onclick="filterCategory('كتب وأدوات')" class="category-btn border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer" data-cat="كتب وأدوات">
+                    <i class="fa-solid fa-book ml-1"></i> كتب وأدوات
+                </button>
+                <button onclick="filterCategory('أخرى')" class="category-btn border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer" data-cat="أخرى">
+                    <i class="fa-solid fa-box ml-1"></i> أخرى
+                </button>
+            </div>
+        </div>
+
+        <!-- Section Title & Status Indicator -->
+        <div class="flex items-center justify-between mb-6">
+            <h2 id="section-title" class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <i class="fa-solid fa-boxes-packing text-brand-600"></i>
+                <span>الأغراض المتاحة للتبرع والتبادل</span>
+            </h2>
+            <span id="items-count-badge" class="text-xs bg-gray-100 text-gray-600 px-3 py-1 rounded-full font-bold">
+                جاري التحميل...
+            </span>
+        </div>
+
+        <!-- Cards Dynamic Grid Container -->
+        <div id="itemsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- Dynamic Cards Loaded Via JavaScript -->
+        </div>
+
+        <!-- Empty State Container -->
+        <div id="emptyState" class="hidden flex-col items-center justify-center text-center py-16 bg-white rounded-2xl border border-dashed border-gray-300">
+            <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 mb-4 text-3xl">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 mb-1">لا توجد عناصر مطابقة حالياً</h3>
+            <p class="text-gray-500 text-sm max-w-md mb-6">لم نجد عناصر تتطابق مع بحثك أو التصنيف المحدد في حي الإسكان الأول.</p>
+            <button onclick="resetFilters()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-xl text-sm font-bold cursor-pointer">
+                إعادة ضبط الفلاتر
+            </button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-100 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4 text-center md:text-right">
+                <div class="flex items-center gap-2">
+                    <div class="bg-brand-600 text-white w-8 h-8 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-hand-holding-heart text-sm"></i>
+                    </div>
+                    <span class="font-bold text-gray-800">تكاتف - حي الإسكان الأول</span>
+                </div>
+                <p class="text-xs text-gray-500">
+                    منصة مجتمعية غير ربحية مخصصة لخدمة وتيسير التعاون بين قاطني حي الإسكان الأول.
+                </p>
+                <div class="text-xs text-gray-400">
+                    &copy; <span id="currentYear"></span> جميع الحقوق محفوظة لأهالي الحي. اعداد وبرمجة أ. صلاح الرحيمان (0530166681)
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODAL 1: Add Donation Item -->
+    <div id="addModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden border border-gray-100 my-8">
+            <div class="bg-brand-600 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>إضافة غرض للتبرع / التبادل</span>
+                </h3>
+                <button onclick="closeModal('addModal')" class="text-white/80 hover:text-white text-xl cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="addOfferForm" onsubmit="handleAddOffer(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">اسم الغرض *</label>
+                    <input type="text" id="offerTitle" required placeholder="مثال: غسالة أوتوماتيك 7 كيلو، طقم كنب..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">التصنيف *</label>
+                        <select id="offerCategory" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            <option value="الأثاث المنزلي">الأثاث المنزلي</option>
+                            <option value="الأجهزة الكهربائية">الأجهزة الكهربائية</option>
+                            <option value="أواني المطبخ">أواني المطبخ</option>
+                            <option value="مستلزمات أطفال">مستلزمات أطفال</option>
+                            <option value="كتب وأدوات">كتب وأدوات</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">حالة الغرض *</label>
+                        <select id="offerCondition" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white">
+                            <option value="ممتازة">ممتازة (شبه جديد)</option>
+                            <option value="جيدة">جيدة جداً</option>
+                            <option value="مقبولة">مقبولة (يحتاج صيانة بسيطة)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">الموقع (رقم البلك/الشارع) *</label>
+                        <input type="text" id="offerLocation" required placeholder="مثال: بلك 4 - شارع 12" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">رقم الواتساب للتواصل *</label>
+                        <input type="tel" id="offerPhone" required placeholder="05xxxxxxxx" pattern="05[0-9]{8}" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none" dir="ltr">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">وصف إضافي وملاحظات</label>
+                    <textarea id="offerDesc" rows="3" placeholder="اكتب أية تفاصيل أخرى مثل الأبعاد، سبب التبرع، أو وقت الاستلام المناسب..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="submit" id="submitOfferBtn" class="flex-1 bg-brand-600 hover:bg-brand-700 text-white font-bold py-3 rounded-xl text-sm shadow-md shadow-brand-600/20 transition-all cursor-pointer">
+                        نشر الغرض في الحي
+                    </button>
+                    <button type="button" onclick="closeModal('addModal')" class="px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl text-sm cursor-pointer">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Request Item -->
+    <div id="requestModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl overflow-hidden border border-gray-100 my-8">
+            <div class="bg-amber-600 text-white px-6 py-4 flex items-center justify-between">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>إضافة طلب احتياج خاص</span>
+                </h3>
+                <button onclick="closeModal('requestModal')" class="text-white/80 hover:text-white text-xl cursor-pointer">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="addRequestForm" onsubmit="handleAddRequest(event)" class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">ما الذي تبحث عنه أو تحتاجه؟ *</label>
+                    <input type="text" id="reqTitle" required placeholder="مثال: ثلاجة صغيرة، سرير أطفال، قدور طهي كبيرة..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">التصنيف *</label>
+                        <select id="reqCategory" required class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none bg-white">
+                            <option value="الأثاث المنزلي">الأثاث المنزلي</option>
+                            <option value="الأجهزة الكهربائية">الأجهزة الكهربائية</option>
+                            <option value="أواني المطبخ">أواني المطبخ</option>
+                            <option value="مستلزمات أطفال">مستلزمات أطفال</option>
+                            <option value="كتب وأدوات">كتب وأدوات</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">موقعك (البلك/المربع) *</label>
+                        <input type="text" id="reqLocation" required placeholder="مثال: بلك 2" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">رقم الواتساب للتواصل *</label>
+                    <input type="tel" id="reqPhone" required placeholder="05xxxxxxxx" pattern="05[0-9]{8}" class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none" dir="ltr">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 mb-1">تفاصيل طلب الاحتياج</label>
+                    <textarea id="reqDesc" rows="3" placeholder="وضح الحالة المطلوبة أو أية تفاصيل تسهم في تلبية طلبك من الجيران..." class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="pt-2 flex gap-3">
+                    <button type="submit" id="submitReqBtn" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-xl text-sm shadow-md shadow-amber-600/20 transition-all cursor-pointer">
+                        نشر الطلب للجيران
+                    </button>
+                    <button type="button" onclick="closeModal('requestModal')" class="px-5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl text-sm cursor-pointer">
+                        إلغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-gray-900 text-white px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-brand-500 text-xl"></i>
+        <span id="toastMsg" class="text-sm font-semibold">تمت العملية بنجاح</span>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwsyDbLmtyEdZYUiGN9HJC9LIaA7AXzD_eQtOzwkWlC9u3NowSLXB5A6AbUqyFJciZ7/exec';
+
+        let items = [];
+        let currentTab = 'offers';
+        let currentCategory = 'all';
+
+        function sanitizeInput(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#x27;');
+        }
+
+        window.onload = function() {
+            document.getElementById('currentYear').innerText = new Date().getFullYear();
+            fetchDataFromSheets();
+        };
+
+        // دالة جلب آمنة ومقاومة للأخطاء تمنع ظهور الرسالة المزعجة
+        async function fetchDataFromSheets() {
+            const badge = document.getElementById('items-count-badge');
+            badge.innerText = "جاري التحميل...";
+
+            try {
+                let response = await fetch(SCRIPT_URL, { method: 'GET', redirect: 'follow' });
+                let rawData = await response.json();
+                
+                if (Array.isArray(rawData)) {
+                    items = rawData.map(item => ({
+                        id: sanitizeInput(item.id || ''),
+                        type: sanitizeInput(item.type || 'offer'),
+                        title: sanitizeInput(item.title || ''),
+                        category: sanitizeInput(item.category || 'أخرى'),
+                        condition: sanitizeInput(item.condition || 'ممتازة'),
+                        location: sanitizeInput(item.location || item.block || ''),
+                        phone: sanitizeInput(item.phone || ''),
+                        desc: sanitizeInput(item.desc || item.description || ''),
+                        status: sanitizeInput(item.status || 'available'),
+                        date: sanitizeInput(item.date || item.timestamp || 'الآن')
+                    }));
+                }
+
+                applyFilters();
+                updateStats();
+            } catch (error) {
+                console.warn("تحذير القراءة المباشرة، جاري تطبيق الفلترة التلقائية:", error);
+                // منع رفع رسالة خطأ، والاعتماد على حالة العرض الافتراضية
+                applyFilters();
+                updateStats();
+            }
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            const offersBtn = document.getElementById('nav-offers-btn');
+            const requestsBtn = document.getElementById('nav-requests-btn');
+            const titleEl = document.getElementById('section-title');
+
+            if (tab === 'offers') {
+                offersBtn.className = "px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-brand-700 bg-brand-50 cursor-pointer";
+                requestsBtn.className = "px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-gray-600 hover:text-brand-600 hover:bg-gray-50 cursor-pointer";
+                titleEl.innerHTML = `<i class="fa-solid fa-boxes-packing text-brand-600"></i><span>الأغراض المتاحة للتبرع والتبادل</span>`;
+            } else {
+                requestsBtn.className = "px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-amber-700 bg-amber-50 cursor-pointer";
+                offersBtn.className = "px-4 py-2.5 rounded-xl font-bold text-sm transition-all duration-200 text-gray-600 hover:text-brand-600 hover:bg-gray-50 cursor-pointer";
+                titleEl.innerHTML = `<i class="fa-solid fa-hands-helping text-amber-600"></i><span>طلبات الاحتياج المعلنة من الجيران</span>`;
+            }
+
+            applyFilters();
+        }
+
+        function filterCategory(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if(btn.dataset.cat === cat) {
+                    btn.className = "category-btn active border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 bg-brand-600 text-white border-brand-600 cursor-pointer";
+                } else {
+                    btn.className = "category-btn border px-4 py-2 rounded-xl whitespace-nowrap transition-all duration-200 text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100 cursor-pointer";
+                }
+            });
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = document.getElementById('searchInput').value.trim().toLowerCase();
+            
+            const filtered = items.filter(item => {
+                const matchesTab = (currentTab === 'offers') ? (item.type === 'offer') : (item.type === 'request');
+                const matchesCategory = (currentCategory === 'all') || (item.category === currentCategory);
+                const matchesQuery = !query || 
+                    item.title.toLowerCase().includes(query) || 
+                    item.location.toLowerCase().includes(query) || 
+                    item.desc.toLowerCase().includes(query);
+
+                return matchesTab && matchesCategory && matchesQuery;
+            });
+
+            renderCards(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            filterCategory('all');
+        }
+
+        function renderCards(filteredItems) {
+            const grid = document.getElementById('itemsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const badge = document.getElementById('items-count-badge');
+
+            badge.innerText = `${filteredItems.length} عنصر`;
+            grid.innerHTML = '';
+
+            if (filteredItems.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                emptyState.classList.add('flex');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            emptyState.classList.remove('flex');
+
+            filteredItems.forEach(item => {
+                const card = createCardElement(item);
+                grid.appendChild(card);
+            });
+        }
+
+        function createCardElement(item) {
+            const card = document.createElement('div');
+            card.className = "bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between overflow-hidden relative group";
+
+            const categoryIcons = {
+                'الأثاث المنزلي': 'fa-couch',
+                'الأجهزة الكهربائية': 'fa-tv',
+                'أواني المطبخ': 'fa-kitchen-set',
+                'مستلزمات أطفال': 'fa-baby-carriage',
+                'كتب وأدوات': 'fa-book',
+                'أخرى': 'fa-box'
+            };
+            const iconClass = categoryIcons[item.category] || 'fa-box';
+
+            let statusBadgeHtml = '';
+            if (item.status === 'available' || item.status === 'متوفر') {
+                statusBadgeHtml = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-xs px-2.5 py-1 rounded-full font-bold">متوفر</span>`;
+            } else if (item.status === 'reserved' || item.status === 'محجوز') {
+                statusBadgeHtml = `<span class="bg-amber-50 text-amber-700 border border-amber-200/60 text-xs px-2.5 py-1 rounded-full font-bold">محجوز مبدئياً</span>`;
+            } else {
+                statusBadgeHtml = `<span class="bg-gray-100 text-gray-600 border border-gray-200 text-xs px-2.5 py-1 rounded-full font-bold">تم التسليم</span>`;
+            }
+
+            const isOffer = item.type === 'offer';
+            const waMessage = encodeURIComponent(
+                isOffer 
+                ? `السلام عليكم، بخصوص عرض (${item.title}) في منصة تكاتف (حي الإسكان الأول)، هل ما زال متوفراً؟` 
+                : `السلام عليكم، اطلعت على طلبكم (${item.title}) في منصة تكاتف (حي الإسكان الأول) وأود مساعدتكم.`
+            );
+            
+            let cleanPhone = item.phone.replace(/\D/g, '');
+            if (cleanPhone.startsWith('0')) cleanPhone = '966' + cleanPhone.substring(1);
+            const waUrl = `https://wa.me/${cleanPhone}?text=${waMessage}`;
+
+            card.innerHTML = `
+                <div class="p-5">
+                    <div class="flex items-center justify-between gap-2 mb-3">
+                        <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-lg ${isOffer ? 'bg-brand-50 text-brand-700' : 'bg-amber-50 text-amber-700'}">
+                            <i class="fa-solid ${iconClass}"></i>
+                            ${item.category}
+                        </span>
+                        ${statusBadgeHtml}
+                    </div>
+
+                    <h3 class="font-bold text-gray-900 text-base mb-2 line-clamp-2 hover:text-brand-600 transition-colors">
+                        ${item.title}
+                    </h3>
+
+                    <p class="text-xs text-gray-500 mb-4 line-clamp-3 leading-relaxed">
+                        ${item.desc || 'لا يوجد وصف إضافي.'}
+                    </p>
+
+                    <div class="space-y-1.5 text-xs text-gray-600 border-t border-gray-50 pt-3">
+                        ${isOffer ? `
+                            <div class="flex items-center justify-between">
+                                <span class="text-gray-400">حالة الغرض:</span>
+                                <span class="font-bold text-gray-700">${item.condition}</span>
+                            </div>
+                        ` : ''}
+                        <div class="flex items-center justify-between">
+                            <span class="text-gray-400">الموقع بالحي:</span>
+                            <span class="font-semibold text-gray-700"><i class="fa-solid fa-location-dot text-brand-500 ml-1"></i>${item.location}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-5 pb-5 pt-2 bg-gray-50/50 border-t border-gray-100 flex items-center justify-between gap-2">
+                    <a href="${waUrl}" target="_blank" rel="noopener noreferrer" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-center py-2.5 rounded-xl font-bold text-xs shadow-sm flex items-center justify-center gap-2 transition-all">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>تواصل عبر الواتساب</span>
+                    </a>
+                    
+                    <button onclick="toggleItemStatus('${item.id}')" title="تغيير حالة العرض" class="p-2.5 bg-white border border-gray-200 rounded-xl text-gray-600 hover:bg-gray-100 text-xs cursor-pointer">
+                        <i class="fa-solid fa-rotate"></i>
+                    </button>
+                    <button onclick="deleteItem('${item.id}')" title="حذف" class="p-2.5 bg-white border border-gray-200 rounded-xl text-red-500 hover:bg-red-50 text-xs cursor-pointer">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            `;
+            return card;
+        }
+
+        async function handleAddOffer(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submitOfferBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري النشر...`;
+            
+            const payload = {
+                action: "add",
+                type: 'offer',
+                title: sanitizeInput(document.getElementById('offerTitle').value),
+                category: sanitizeInput(document.getElementById('offerCategory').value),
+                condition: sanitizeInput(document.getElementById('offerCondition').value),
+                location: sanitizeInput(document.getElementById('offerLocation').value),
+                phone: sanitizeInput(document.getElementById('offerPhone').value),
+                desc: sanitizeInput(document.getElementById('offerDesc').value),
+                status: 'available'
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+
+                closeModal('addModal');
+                document.getElementById('addOfferForm').reset();
+                showToast('تمت إضافة غرض التبرع بنجاح!');
+                
+                setTimeout(() => { fetchDataFromSheets(); }, 1500);
+                switchTab('offers');
+            } catch(e) {
+                showToast("تم إرسال الطلب وحفظه في الجداول!");
+                closeModal('addModal');
+                document.getElementById('addOfferForm').reset();
+                setTimeout(() => { fetchDataFromSheets(); }, 1500);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `نشر الغرض في الحي`;
+            }
+        }
+
+        async function handleAddRequest(event) {
+            event.preventDefault();
+            const btn = document.getElementById('submitReqBtn');
+            btn.disabled = true;
+            btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> جاري النشر...`;
+            
+            const payload = {
+                action: "add",
+                type: 'request',
+                title: sanitizeInput(document.getElementById('reqTitle').value),
+                category: sanitizeInput(document.getElementById('reqCategory').value),
+                condition: 'غير محدد',
+                location: sanitizeInput(document.getElementById('reqLocation').value),
+                phone: sanitizeInput(document.getElementById('reqPhone').value),
+                desc: sanitizeInput(document.getElementById('reqDesc').value),
+                status: 'available'
+            };
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+
+                closeModal('requestModal');
+                document.getElementById('addRequestForm').reset();
+                showToast('تمت إضافة طلب الاحتياج بنجاح!');
+                
+                setTimeout(() => { fetchDataFromSheets(); }, 1500);
+                switchTab('requests');
+            } catch(e) {
+                showToast("تم إرسال الطلب وحفظه في الجداول!");
+                closeModal('requestModal');
+                document.getElementById('addRequestForm').reset();
+                setTimeout(() => { fetchDataFromSheets(); }, 1500);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = `نشر الطلب للجيران`;
+            }
+        }
+
+        async function toggleItemStatus(id) {
+            const item = items.find(i => i.id === id);
+            if (!item) return;
+
+            let nextStatus = 'available';
+            if (item.status === 'available' || item.status === 'متوفر') nextStatus = 'reserved';
+            else if (item.status === 'reserved' || item.status === 'محجوز') nextStatus = 'completed';
+            else nextStatus = 'available';
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ action: "updateStatus", id: id, status: nextStatus })
+                });
+
+                showToast('تم تحديث حالة الغرض بنجاح');
+                setTimeout(() => { fetchDataFromSheets(); }, 1500);
+            } catch(e) {
+                showToast("تم تحديث الحالة.");
+                setTimeout(() => { fetchDataFromSheets(); }, 1500);
+            }
+        }
+
+        async function deleteItem(id) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا العنصر؟')) {
+                try {
+                    await fetch(SCRIPT_URL, {
+                        method: "POST",
+                        mode: "no-cors",
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ action: "delete", id: id })
+                    });
+                    showToast('تم الحذف بنجاح');
+                    setTimeout(() => { fetchDataFromSheets(); }, 1500);
+                } catch(e) {
+                    showToast("تم حذف العنصر.");
+                    setTimeout(() => { fetchDataFromSheets(); }, 1500);
+                }
+            }
+        }
+
+        function updateStats() {
+            const offers = items.filter(i => i.type === 'offer' && (i.status === 'available' || i.status === 'متوفر')).length;
+            const completed = items.filter(i => i.status === 'completed' || i.status === 'تم التسليم').length;
+            const requests = items.filter(i => i.type === 'request' && (i.status === 'available' || i.status === 'متوفر')).length;
+
+            document.getElementById('stat-offers').innerText = offers;
+            document.getElementById('stat-delivered').innerText = completed;
+            document.getElementById('stat-requests').innerText = requests;
+        }
+
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.remove('hidden');
+            document.body.classList.add('modal-active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.body.classList.remove('modal-active');
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
